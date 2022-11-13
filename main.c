@@ -5,26 +5,22 @@
 
 float A, B, C;
 
-float cubeWidth = 30;
+const float cubeWidth = 18.0f;
 int width = 80, height = 24;
 float zBuffer[160 * 44];
 char buffer[160 * 44];
-int backgroundASCIICode = ' ';
-int distanceFromCam = 100;
-float horizontalOffset;
-float K1 = 40;
+const int backgroundASCIICode = ' ';
+const int distanceFromCam = 100;
+const float K1 = 40.0f;
 
-float incrementSpeed = 0.6;
+const float incrementSpeed = 0.6f;
 
-float x, y, z;
-float ooz;
-int xp, yp;
-int idx;
 
 float calculateX(int i, int j, int k) {
   return j * sin(A) * sin(B) * cos(C) - k * cos(A) * sin(B) * cos(C) +
          j * cos(A) * sin(C) + k * sin(A) * sin(C) + i * cos(B) * cos(C);
 }
+
 
 float calculateY(int i, int j, int k) {
   return j * cos(A) * cos(C) + k * sin(A) * cos(C) -
@@ -32,21 +28,23 @@ float calculateY(int i, int j, int k) {
          i * cos(B) * sin(C);
 }
 
+
 float calculateZ(int i, int j, int k) {
   return k * cos(A) * cos(B) - j * sin(A) * cos(B) + i * sin(B);
 }
 
+
 void calculateForSurface(float cubeX, float cubeY, float cubeZ, int ch) {
-  x = calculateX(cubeX, cubeY, cubeZ);
-  y = calculateY(cubeX, cubeY, cubeZ);
-  z = calculateZ(cubeX, cubeY, cubeZ) + distanceFromCam;
+  float x = calculateX(cubeX, cubeY, cubeZ);
+  float y = calculateY(cubeX, cubeY, cubeZ);
+  float z = calculateZ(cubeX, cubeY, cubeZ) + distanceFromCam;
 
-  ooz = 1 / z;
+  float ooz = 1 / z;
 
-  xp = (int)(width / 2 + horizontalOffset + K1 * ooz * x * 2);
-  yp = (int)(height / 2 + K1 * ooz * y);
+  int xp = (int)(width / 2 + K1 * ooz * x * 2);
+  int yp = (int)(height / 2 + K1 * ooz * y);
 
-  idx = xp + yp * width;
+  int idx = xp + yp * width;
   if (idx >= 0 && idx < width * height) {
     if (ooz > zBuffer[idx]) {
       zBuffer[idx] = ooz;
@@ -55,14 +53,13 @@ void calculateForSurface(float cubeX, float cubeY, float cubeZ, int ch) {
   }
 }
 
+
 int main() {
   printf("\x1b[2J");
   while (1) {
     memset(buffer, backgroundASCIICode, width * height);
-    memset(zBuffer, 0, width * height * 4);
-    cubeWidth = 18;
-    horizontalOffset = 0 * cubeWidth;
-    // first cube
+    memset(zBuffer, 0.0f, width * height * 4);
+
     for (float cubeX = -cubeWidth; cubeX < cubeWidth; cubeX += incrementSpeed) {
       for (float cubeY = -cubeWidth; cubeY < cubeWidth;
            cubeY += incrementSpeed) {
@@ -79,10 +76,11 @@ int main() {
       putchar(k % width ? buffer[k] : 10);
     }
 
-    A += 0.05;
-    B += 0.05;
-    C += 0.01;
+    A += 0.05f;
+    B += 0.05f;
+    C += 0.01f;
     usleep(8000 * 2);
   }
+
   return 0;
 }
